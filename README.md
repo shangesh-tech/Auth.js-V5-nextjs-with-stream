@@ -36,7 +36,7 @@ cookies: {
 Deploy to Vercel by pushing to your repo (Vercel auto-builds). After deployment, test login in a browser—check dev tools for the secure cookie and ensure sessions persist. If issues arise (e.g., cross-origin problems), Vercel's docs on env vars and cookies are helpful. Let me know if you need more tweaks!
 
 
-page.js
+## page.js
 
 "use client";
 import { useSession } from 'next-auth/react';
@@ -68,7 +68,7 @@ export default function HomePage() {
 }
 
 
-route.js
+## route.js
 
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
