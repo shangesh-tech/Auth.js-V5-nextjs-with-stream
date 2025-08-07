@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { connectDB } from "@/lib/config/db";
 import { User } from "@/lib/models/User";
+import { StreamChat } from "stream-chat";
+
+const STREAM_API_KEY = process.env.STREAM_API_KEY;
+const STREAM_API_SECRET = process.env.STREAM_API_SECRET;
 
 export async function POST(req) {
     try {
@@ -37,6 +41,14 @@ export async function POST(req) {
             password: hashedPassword,
             gender,
             authProvider: "credentials",
+        });
+
+        // Upsert to Stream Chat
+        const serverClient = StreamChat.getInstance(STREAM_API_KEY, STREAM_API_SECRET);
+        await serverClient.upsertUser({
+                id: user._id.toString(),
+                name: `${user.firstName} ${user.lastName}`,
+                image: user.image || '',
         });
 
         return NextResponse.json(
