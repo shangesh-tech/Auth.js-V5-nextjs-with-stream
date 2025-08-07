@@ -35,3 +35,56 @@ cookies: {
 
 Deploy to Vercel by pushing to your repo (Vercel auto-builds). After deployment, test login in a browser—check dev tools for the secure cookie and ensure sessions persist. If issues arise (e.g., cross-origin problems), Vercel's docs on env vars and cookies are helpful. Let me know if you need more tweaks!
 
+
+page.js
+
+"use client";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function HomePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log('Session status:', status);
+    console.log('Session data:', session);
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router, session]);
+
+  if (status === 'loading' || status === 'unauthenticated') {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {session?.user.email}!</h1>
+      <p>This component is protected.</p>
+    </div>
+  );
+}
+
+
+route.js
+
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export async function GET(request) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return NextResponse.json({
+    user: {
+      id: session.user.id,
+      email: session.user.email,
+      role: session.user.role
+    },
+  });
+}

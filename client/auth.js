@@ -73,16 +73,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async session({ session, token }) {
-      if (token?.sub && token?.role) {
+      if(token?.sub) {
         session.user.id = token.sub;
+      }
+      if (token?.email) {
+        session.user.email = token.email;
+      }
+      if (token?.role) {
         session.user.role = token.role;
+      }
+      if (token?.firstName) {
+        session.user.firstName = token.firstName;
+      }
+      if (token?.lastName) {
+        session.user.lastName = token.lastName;
+      }
+      if (token?.gender) {
+        session.user.gender = token.gender;
       }
       return session;
     },
     async jwt({ token, user, account, trigger, session }) {
       if (user) {
-        token.role = user.role;
         token.id = user.id;
+        token.email = user.email;
+        token.role = user.role;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.gender = user.gender;
       }
       if (trigger === "signIn" && account?.type === "credentials") {
         if (session?.remember === "true") {
